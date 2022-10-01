@@ -38,6 +38,8 @@ private slots:
 
     void on_help_triggered();
 
+    void on_search_triggered();
+
 private:
     Ui::MainWindow *ui;
     void initDB(QSqlDatabase db);

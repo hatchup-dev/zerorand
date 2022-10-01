@@ -7,13 +7,21 @@
 #include <random>
 #include <QStyle>
 #include <QScreen>
+#include <QDesktopServices>
+#include <QDir>
+#include <QStandardPaths>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    QCoreApplication::setApplicationName("ZeroRand");
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("zerorand");
+    QDir().mkdir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    db.setDatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+"/database.sqlite");
+    qDebug() << db.databaseName();
+
     if (!db.open()) {
         qDebug() << db.lastError().text();
     }
@@ -55,6 +63,7 @@ void MainWindow::updateDB(QSqlDatabase db)
     }
     changeState(false);
     ui->del_point->setDisabled(true);
+    ui->search->setDisabled(true);
 }
 
 void MainWindow::changeState(bool state)
@@ -63,6 +72,7 @@ void MainWindow::changeState(bool state)
     ui->pb_addtoDB->setDisabled(!state);
     ui->pb_random->setDisabled(!state);
     ui->del_list->setDisabled(!state);
+
 }
 
 
@@ -133,7 +143,7 @@ void MainWindow::on_del_point_triggered()
 
 void MainWindow::on_list_Main_itemSelectionChanged()
 {
-    if(!ui->list_Main->currentItem()->text().isEmpty())ui->del_point->setDisabled(false);
+    if(!ui->list_Main->currentItem()->text().isEmpty()){ui->del_point->setDisabled(false); ui->search->setDisabled(false);};
 }
 
 void MainWindow::on_pb_random_clicked()
@@ -163,12 +173,19 @@ void MainWindow::on_list_Main_itemDoubleClicked(QListWidgetItem *item)
 
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this,"О программе","ZeroRand v1.2\nПрограмма для ведения списков с функцией рандомайзера.\nDeveloped by hatchup-dev [zer0hi]\n(https://github.com/hatchup-dev).");
+    QMessageBox::about(this,"О программе","ZeroRand v1.4\nПрограмма для ведения списков с функцией рандомайзера.\nDeveloped by hatchup-dev [zer0hi]\n(https://github.com/hatchup-dev).");
 }
 
 
 void MainWindow::on_help_triggered()
 {
     QMessageBox::information(this,"Помощь","Данная программа позволяет вести списки, а также выбирать случайный элемент из данных списков.\nДля создания списка нажмите кнопку (+).\nДля выбора списка используйте меню выбора списка.\nДанные сохраняются в sqlite базу в рабочей папке. Удалить пункт/список можно с помощью подменю \"удалить\", либо используя горячие клавиши Del и Shift+Del соответственно.\n По всем вопросам обращайтесь к разработчику программы, контакты можно найти в подменю \"О программе\".");
+}
+
+
+void MainWindow::on_search_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://yandex.ru/search/?text="+ui->cb_chooseDB->currentText()+" "+ui->list_Main->currentItem()->text()));
+
 }
 

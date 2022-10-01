@@ -26,14 +26,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     res.qrc
 
-DISTFILES += \
-    android/AndroidManifest.xml \
-    android/build.gradle \
-    android/gradle.properties \
-    android/gradle/wrapper/gradle-wrapper.jar \
-    android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew \
-    android/gradlew.bat \
-    android/res/values/libs.xml
-
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+contains(ANDROID_TARGET_ARCH,) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}
